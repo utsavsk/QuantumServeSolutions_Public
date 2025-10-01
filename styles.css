@@ -80,6 +80,10 @@ body {
     transition: background 0.3s ease, transform 0.3s ease;
 }
 
+.cta-band p {
+    color: var(--white);
+}
+
 .cta:hover,
 .cta:focus {
     background: rgba(99, 102, 241, 0.35);
