@@ -392,17 +392,37 @@
         <p>&copy; <span id="year"></span> Quantum Serve Solutions. All rights reserved.</p>
     </footer>
 
-    <!-- EmailJS SDK (loads first) -->
-    <script src="https://cdn.jsdelivr.net/npm/[email protected]/dist/email.min.js"></script>
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
     <!-- Your app script -->
     <script>
-        // Wait for EmailJS to load and DOM to be ready
-        document.addEventListener("DOMContentLoaded", function () {
-            // Initialize EmailJS (public key is safe)
-            if (window.emailjs) {
-                window.emailjs.init("YhdAWFSSB5uMOn1r5");
+        // Function to wait for EmailJS to be available
+        function waitForEmailJS(callback, maxAttempts = 50) {
+            let attempts = 0;
+
+            function check() {
+                attempts++;
+                if (window.emailjs && window.emailjs.send) {
+                    console.log("EmailJS loaded successfully");
+                    callback();
+                } else if (attempts < maxAttempts) {
+                    console.log(`Waiting for EmailJS... attempt ${attempts}`);
+                    setTimeout(check, 100);
+                } else {
+                    console.error("EmailJS failed to load after", maxAttempts, "attempts");
+                }
             }
+
+            check();
+        }
+
+        // Function to initialize everything once EmailJS is ready
+        function initializeApp() {
+            // Initialize EmailJS
+            window.emailjs.init("YhdAWFSSB5uMOn1r5");
+            console.log("EmailJS initialized with public key");
+
             document.querySelector('#year').textContent = new Date().getFullYear();
 
             const timelineHighlights = [
@@ -493,7 +513,17 @@
                     }
                 });
             }
-        });
+        }
+
+        // Wait for both DOM and EmailJS to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function () {
+                waitForEmailJS(initializeApp);
+            });
+        } else {
+            // DOM is already ready
+            waitForEmailJS(initializeApp);
+        }
     </script>
 </body>
 
