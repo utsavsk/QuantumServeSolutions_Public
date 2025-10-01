@@ -28,6 +28,24 @@ body {
     line-height: 1.6;
 }
 
+/* Skip link for accessibility */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--primary);
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 4px;
+    z-index: 1000;
+    transition: top 0.3s;
+}
+
+.skip-link:focus {
+    top: 6px;
+}
+
 .hero {
     background: radial-gradient(circle at top left, rgba(99, 102, 241, 0.45), transparent 55%),
         linear-gradient(135deg, var(--bg), #0b1228 55%);
