@@ -186,8 +186,7 @@
                     <h3>Ashok Srivastav</h3>
                     <p>
                         Ashok shapes the Quantum Serve vision and ensures every engagement delivers measurable value for
-                        finance
-                        leaders navigating complex billing environments.
+                        finance leaders navigating complex billing environments.
                     </p>
                     <a class="team-link" href="https://www.linkedin.com/in/ashoksrivastav/" target="_blank"
                         rel="noreferrer">
@@ -199,12 +198,10 @@
                     <h3>Utsav Kattel</h3>
                     <p>
                         Utsav leads our technology strategy, pairing automation opportunities with pragmatic delivery to
-                        keep
-                        your billing operations adaptive and insight-driven.
+                        keep your billing operations adaptive and insight-driven.
                     </p>
                 </article>
             </div>
-
         </section>
 
         <section id="governance" class="section governance">
@@ -314,6 +311,8 @@
                     </p>
                     <p>Address: Glastonbury, CT</p>
                 </div>
+
+                <!-- Contact form -->
                 <form id="contact-form" class="contact-form" novalidate>
                     <div class="form-field">
                         <label for="name">Name</label>
@@ -329,9 +328,14 @@
                     </div>
                     <div class="form-field">
                         <label for="message">How can we help?</label>
-                        <textarea id="message" name="message" rows="4"
-                            placeholder="Tell us about your billing goals"></textarea>
+                        <textarea id="message" name="message" rows="4" placeholder="Tell us about your billing goals"
+                            required></textarea>
                     </div>
+
+                    <!-- Honeypot (spam trap) -->
+                    <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off"
+                        aria-hidden="true" />
+
                     <button type="submit" class="primary">Submit Inquiry</button>
                     <p id="contact-status" class="contact-status" role="status" aria-live="polite"></p>
                 </form>
@@ -343,79 +347,95 @@
         <p>&copy; <span id="year"></span> Quantum Serve Solutions. All rights reserved.</p>
     </footer>
 
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/[email protected]/dist/email.min.js"></script>
+
     <script type="module">
+        // --- Initialize EmailJS (public key is safe to expose) ---
+        emailjs.init("YhdAWFSSB5uMOn1r5");
+
+        // --- Timeline + year (unchanged) ---
         const timelineHighlights = [
             {
-                phase: 'Stabilize',
-                title: 'Rapid Resource Deployment',
-                description:
-                    'Embed experienced invoicing specialists to absorb backlog, issue timely invoices and protect revenue continuity.'
+                phase: 'Stabilize', title: 'Rapid Resource Deployment',
+                description: 'Embed experienced invoicing specialists to absorb backlog, issue timely invoices and protect revenue continuity.'
             },
             {
-                phase: 'Optimize',
-                title: 'Analytics-Powered Visibility',
-                description:
-                    'Launch dashboards, validation checklists and SLA scorecards that spotlight trends, disputes and process opportunities.'
+                phase: 'Optimize', title: 'Analytics-Powered Visibility',
+                description: 'Launch dashboards, validation checklists and SLA scorecards that spotlight trends, disputes and process opportunities.'
             },
             {
-                phase: 'Elevate',
-                title: 'Continuous Improvement & Automation',
-                description:
-                    'Introduce automation concepts, conduct recurring root cause reviews and evolve governance for long-term resilience.'
+                phase: 'Elevate', title: 'Continuous Improvement & Automation',
+                description: 'Introduce automation concepts, conduct recurring root cause reviews and evolve governance for long-term resilience.'
             }
         ];
 
         const container = document.querySelector('#timeline');
-
-        container.innerHTML = timelineHighlights
-            .map(
-                ({ phase, title, description }) => `
-                <article class="timeline-item">
-                    <span>${phase}</span>
-                    <h3>${title}</h3>
-                    <p>${description}</p>
-                </article>
-            `
-            )
-            .join('');
+        container.innerHTML = timelineHighlights.map(
+            ({ phase, title, description }) => `
+        <article class="timeline-item">
+          <span>${phase}</span>
+          <h3>${title}</h3>
+          <p>${description}</p>
+        </article>`
+        ).join('');
 
         document.querySelector('#year').textContent = new Date().getFullYear();
 
+        // --- Contact form via EmailJS ---
         const contactForm = document.querySelector('#contact-form');
         const contactStatus = document.querySelector('#contact-status');
+
+        const SERVICE_ID = "service_r87glq8";
+        const TEMPLATE_ID = "template_8me2x34";
+
+        const validateEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(e).toLowerCase());
 
         if (contactForm) {
             contactForm.addEventListener('submit', async (event) => {
                 event.preventDefault();
 
-                const formData = new FormData(contactForm);
-                const payload = Object.fromEntries(formData.entries());
+                const btn = contactForm.querySelector('button[type="submit"]');
+                const data = new FormData(contactForm);
 
-                contactStatus.textContent = 'Sending your message...';
+                if (data.get('website')) return;
+
+                const name = (data.get('name') || '').trim();
+                const email = (data.get('email') || '').trim();
+                const company = (data.get('company') || '').trim();
+                const message = (data.get('message') || '').trim();
+
+                if (!name || !validateEmail(email) || !message) {
+                    contactStatus.textContent = "Please provide your name, a valid email, and a message.";
+                    contactStatus.classList.remove('success');
+                    contactStatus.classList.add('error');
+                    return;
+                }
+
+                contactStatus.textContent = "Sending your message...";
                 contactStatus.classList.remove('success', 'error');
+                btn.disabled = true;
 
                 try {
-                    const response = await fetch('https://formsubmit.co/ajax/contact@QuantumServeSolutions.com', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Accept: 'application/json'
-                        },
-                        body: JSON.stringify(payload)
+                    await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+                        name,        // {{name}}
+                        email,       // {{email}} (set Reply-To in template)
+                        company,     // {{company}}
+                        message,     // {{message}}
+                        site_url: window.location.origin,
+                        time: new Date().toLocaleString()
                     });
 
-                    if (!response.ok) {
-                        throw new Error('Request failed');
-                    }
-
-                    contactStatus.textContent =
-                        'Thank you! Your inquiry is on its way—expect a reply from our team shortly.';
+                    // Success (inline). If you prefer redirect UX, create /thanks.html and redirect here.
+                    // window.location.href = "/thanks.html";
+                    contactStatus.textContent = "Thank you! Your inquiry is on its way—expect a reply shortly.";
                     contactStatus.classList.add('success');
                     contactForm.reset();
-                } catch (error) {
-                    contactStatus.textContent =
-                        'We were unable to send your message. Please try again or email contact@QuantumServeSolutions.com directly.';
+                } catch (err) {
+                    contactStatus.textContent = "We couldn’t send your message right now. Please try again or email contact@QuantumServeSolutions.com.";
                     contactStatus.classList.add('error');
+                } finally {
+                    btn.disabled = false;
                 }
             });
         }
