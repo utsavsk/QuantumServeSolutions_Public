@@ -591,14 +591,14 @@ textarea:focus {
         gap: 1rem;
         align-items: flex-start;
     }
-    
+
     .nav-links {
         gap: 0.25rem;
         flex-wrap: wrap;
         width: 100%;
         justify-content: flex-start;
     }
-    
+
     .nav-links a {
         font-size: 0.9rem;
         padding: 0.6rem 0.8rem;
@@ -609,13 +609,13 @@ textarea:focus {
         text-align: center;
         justify-content: center;
     }
-    
+
     .nav-links a:hover,
     .nav-links a:focus {
         background: rgba(255, 255, 255, 0.2);
         color: var(--white);
     }
-    
+
     .cta {
         margin-top: 0.5rem;
         align-self: flex-start;
@@ -637,5 +637,31 @@ textarea:focus {
 
     .sla-row {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* Extra small screens - stack navigation vertically */
+@media (max-width: 480px) {
+    .nav-links {
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 100%;
+    }
+
+    .nav-links a {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        text-align: left;
+        justify-content: flex-start;
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .logo-text {
+        font-size: 1rem;
+    }
+
+    .logo-img {
+        height: 56px;
+        width: 56px;
     }
 }
