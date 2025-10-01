@@ -348,15 +348,16 @@
     </footer>
 
     <!-- EmailJS SDK (loads first) -->
-    <script src="https://cdn.jsdelivr.net/npm/[email protected]/dist/email.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/[email protected]/dist/email.min.js"></script>
 
-    <!-- Your app script (non-module; use window.emailjs) -->
-    <script defer>
-        // Initialize EmailJS (public key is safe)
-        window.emailjs.init("YhdAWFSSB5uMOn1r5");
-
-        // Timeline + year
+    <!-- Your app script -->
+    <script>
+        // Wait for EmailJS to load and DOM to be ready
         document.addEventListener("DOMContentLoaded", function () {
+            // Initialize EmailJS (public key is safe)
+            if (window.emailjs) {
+                window.emailjs.init("YhdAWFSSB5uMOn1r5");
+            }
             document.querySelector('#year').textContent = new Date().getFullYear();
 
             const timelineHighlights = [
@@ -395,6 +396,13 @@
             if (contactForm) {
                 contactForm.addEventListener('submit', async (event) => {
                     event.preventDefault();
+
+                    // Check if EmailJS is loaded
+                    if (!window.emailjs) {
+                        contactStatus.textContent = "Email service not loaded. Please try again.";
+                        contactStatus.classList.add('error');
+                        return;
+                    }
 
                     const btn = contactForm.querySelector('button[type="submit"]');
                     const data = new FormData(contactForm);
