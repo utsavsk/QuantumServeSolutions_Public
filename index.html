@@ -16,6 +16,7 @@
             <ul class="nav-links">
                 <li><a href="#services">Services</a></li>
                 <li><a href="#approach">Approach</a></li>
+                <li><a href="#team">Team</a></li>
                 <li><a href="#governance">Governance</a></li>
                 <li><a href="#sla">SLA</a></li>
                 <li><a href="#contact">Contact</a></li>
@@ -156,6 +157,39 @@
             <div class="timeline" id="timeline"></div>
         </section>
 
+        <section id="team" class="section team">
+            <div class="section-header">
+                <span class="eyebrow">Leadership</span>
+                <h2>Meet the Team Steering Quantum Serve Solutions</h2>
+                <p>Our leaders blend decades of operations excellence with an obsession for elevating client experiences.</p>
+            </div>
+            <div class="team-grid">
+                <article class="team-card">
+                    <span class="team-role">Chief Executive Officer</span>
+                    <h3>Ashok Srivastav</h3>
+                    <p>
+                        Ashok shapes the Quantum Serve vision and ensures every engagement delivers measurable value for finance
+                        leaders navigating complex billing environments.
+                    </p>
+                    <a class="team-link" href="https://www.linkedin.com/in/ashoksrivastav/" target="_blank" rel="noreferrer">
+                        Connect on LinkedIn
+                    </a>
+                </article>
+                <article class="team-card">
+                    <span class="team-role">Chief Technology Officer</span>
+                    <h3>Utsav K.</h3>
+                    <p>
+                        Utsav leads our technology strategy, pairing automation opportunities with pragmatic delivery to keep
+                        your billing operations adaptive and insight-driven.
+                    </p>
+                    <a class="team-link" href="https://www.linkedin.com/in/utsav-k-54883a235/" target="_blank" rel="noreferrer">
+                        LinkedIn Profile (currently being expanded)
+                    </a>
+                </article>
+            </div>
+            <p class="team-note">More leadership bios are on the way as we continue to grow the team.</p>
+        </section>
+
         <section id="governance" class="section governance">
             <div class="section-header">
                 <span class="eyebrow">Governance</span>
@@ -255,11 +289,10 @@
             <div class="contact-grid">
                 <div>
                     <h3>Contact</h3>
-                    <p>Email: <a href="mailto:contact@quantumservesolutions.com">contact@quantumservesolutions.com</a></p>
-                    <p>Phone: +1 (555) 010-2025</p>
-                    <p>Address: 1200 Innovation Way, Chicago, IL</p>
+                    <p>Email: <a href="mailto:contact@QuantumServeSolutions.com">contact@QuantumServeSolutions.com</a></p>
+                    <p>Address: Glastonbury, CT</p>
                 </div>
-                <form class="contact-form">
+                <form id="contact-form" class="contact-form" novalidate>
                     <div class="form-field">
                         <label for="name">Name</label>
                         <input type="text" id="name" name="name" placeholder="Your name" required />
@@ -277,6 +310,7 @@
                         <textarea id="message" name="message" rows="4" placeholder="Tell us about your billing goals"></textarea>
                     </div>
                     <button type="submit" class="primary">Submit Inquiry</button>
+                    <p id="contact-status" class="contact-status" role="status" aria-live="polite"></p>
                 </form>
             </div>
         </section>
@@ -323,6 +357,45 @@
             .join('');
 
         document.querySelector('#year').textContent = new Date().getFullYear();
+
+        const contactForm = document.querySelector('#contact-form');
+        const contactStatus = document.querySelector('#contact-status');
+
+        if (contactForm) {
+            contactForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const formData = new FormData(contactForm);
+                const payload = Object.fromEntries(formData.entries());
+
+                contactStatus.textContent = 'Sending your message...';
+                contactStatus.classList.remove('success', 'error');
+
+                try {
+                    const response = await fetch('https://formsubmit.co/ajax/contact@QuantumServeSolutions.com', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Accept: 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Request failed');
+                    }
+
+                    contactStatus.textContent =
+                        'Thank you! Your inquiry is on its way—expect a reply from our team shortly.';
+                    contactStatus.classList.add('success');
+                    contactForm.reset();
+                } catch (error) {
+                    contactStatus.textContent =
+                        'We were unable to send your message. Please try again or email contact@QuantumServeSolutions.com directly.';
+                    contactStatus.classList.add('error');
+                }
+            });
+        }
     </script>
 </body>
 </html>
